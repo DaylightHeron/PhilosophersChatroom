@@ -126,16 +126,26 @@ def send_message():
     question = request.form.get('message')
 
     if philosopher and question:
-        session['messages'].append({
-            'philosopher': 'You',
-            'text': question
-        })
-        
-        response = get_philosophical_response(philosopher, question)
-        session['messages'].append({
-            'philosopher': philosopher,
-            'text': response
-        })
+        # Check if this is a "tap in" request
+        if question == "*taps in to respond to the conversation*":
+            # For tap-in, don't add the user message, just get the philosopher's response
+            response = get_philosophical_response(philosopher, "Please review the conversation and offer your philosophical perspective.")
+            session['messages'].append({
+                'philosopher': philosopher,
+                'text': response
+            })
+        else:
+            # Normal user question flow
+            session['messages'].append({
+                'philosopher': 'You',
+                'text': question
+            })
+            
+            response = get_philosophical_response(philosopher, question)
+            session['messages'].append({
+                'philosopher': philosopher,
+                'text': response
+            })
         session.modified = True
     
     return redirect(url_for('home'))
