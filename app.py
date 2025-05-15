@@ -143,6 +143,20 @@ def send_message():
     philosopher = request.form.get('philosopher')
     question = request.form.get('message')
     
+    # LOG THE PHILOSOPHER AND QUESTION
+    print(f"Philosopher: {philosopher}")
+    print(f"Question: {question}")
+
+    # log the env
+    print(f"OPENAI_API_KEY: {os.getenv('OPENAI_API_KEY')}")
+    # and the env name
+    print(f"FLASK_ENV: {os.getenv('FLASK_ENV')}")
+    print(f"FLASK_DEBUG: {os.getenv('FLASK_DEBUG')}")
+    print(f"VERCEL_ENV: {os.getenv('VERCEL_ENV')}")
+    print(f"NODE_ENV: {os.getenv('NODE_ENV')}")
+    print(f"PYTHON_ENV: {os.getenv('PYTHON_ENV')}")
+    
+
     # Check if the philosopher and question are provided
     if philosopher and question:
         # Add the user's question
