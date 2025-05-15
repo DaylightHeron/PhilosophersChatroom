@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import openai
 
 # Load environment variables first
 if os.environ.get('VERCEL_ENV') is None:  # We're not in Vercel
@@ -117,8 +118,12 @@ def get_philosophical_response(philosopher, question):
     
     try:
         # Initialize client inside function
+        print("\nDebug - Attempting to initialize OpenAI client...")
         client = OpenAI(api_key=api_key)
+        print("Debug - OpenAI client initialized successfully")
+        
         print("\nDebug - Attempting to create chat completion...")
+        print(f"Debug - Using model: gpt-4.1-nano")
         
         response = client.chat.completions.create(
             model="gpt-4.1-nano",
@@ -131,7 +136,8 @@ def get_philosophical_response(philosopher, question):
         )
         return response.choices[0].message.content
     except Exception as e:
-        print(f"\nDebug - OpenAI API Error: {str(e)}")
+        print(f"\nDebug - Error details: {type(e).__name__}: {str(e)}")
+        print(f"Debug - OpenAI package version: {openai.__version__}")
         return f"[Error: {str(e)}]"
 
 @app.route("/")
