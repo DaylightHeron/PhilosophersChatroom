@@ -3,8 +3,23 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-print("=== Environment Variable Debug Information ===")
-print(f"Current Working Directory: {os.getcwd()}")
+# Load environment variables first
+if os.environ.get('VERCEL_ENV') is None:  # We're not in Vercel
+    load_dotenv()
+    debug_mode = True
+else:
+    debug_mode = False
+
+# Initialize Flask app with proper configuration
+app = Flask(__name__)
+app.config['ENV'] = 'production' if os.environ.get('VERCEL_ENV') else 'development'
+app.config['DEBUG'] = debug_mode
+
+# Print debug information
+print("\n=== Environment Configuration ===")
+print(f"Flask ENV: {app.config['ENV']}")
+print(f"Debug Mode: {app.config['DEBUG']}")
+print(f"Vercel ENV: {os.environ.get('VERCEL_ENV', 'not set')}")
 
 # Print current environment information
 print("\n=== Current Environment Information ===")
@@ -14,19 +29,6 @@ print(f"VERCEL_ENV: {os.getenv('VERCEL_ENV', 'not set')}")
 print(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
 print(f"PYTHON_ENV: {os.getenv('PYTHON_ENV', 'not set')}")
 print(f"Environment Type: {'Development' if os.getenv('FLASK_DEBUG') == '1' or os.getenv('FLASK_ENV') == 'development' else 'Production'}")
-
-# Only load .env file in development environment
-if os.environ.get('VERCEL_ENV') is None:  # We're not in Vercel
-    print("\nLocal development environment detected")
-    try:
-        load_dotenv()
-        print("✓ Successfully called load_dotenv()")
-    except Exception as e:
-        print(f"✗ Error loading .env file: {str(e)}")
-else:
-    print(f"\nRunning in Vercel environment: {os.environ.get('VERCEL_ENV')}")
-
-app = Flask(__name__)
 
 # Detailed environment variable debugging
 print("\n=== OpenAI API Key Debug ===")
@@ -175,8 +177,8 @@ def send_message():
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=debug_mode)
 
-# Add this for Vercel
-app.debug = False
+# For Vercel deployment
+app.debug = debug_mode
     
