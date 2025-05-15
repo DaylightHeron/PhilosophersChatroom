@@ -120,5 +120,8 @@ def send_message():
     return redirect(url_for('home'))
 
 if __name__ == "__main__":
-    app.run(debug=True)   # auto-reloads when you saveß
+    app.run(debug=True)
+
+# Add this for Vercel
+app.debug = False
     
