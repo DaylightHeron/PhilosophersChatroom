@@ -16,35 +16,6 @@ app = Flask(__name__)
 app.config['ENV'] = 'production' if os.environ.get('VERCEL_ENV') else 'development'
 app.config['DEBUG'] = debug_mode
 
-# Print debug information
-print("\n=== Environment Configuration ===")
-print(f"Flask ENV: {app.config['ENV']}")
-print(f"Debug Mode: {app.config['DEBUG']}")
-print(f"Vercel ENV: {os.environ.get('VERCEL_ENV', 'not set')}")
-
-# Print current environment information
-print("\n=== Current Environment Information ===")
-print(f"FLASK_ENV: {os.getenv('FLASK_ENV', 'not set')}")
-print(f"FLASK_DEBUG: {os.getenv('FLASK_DEBUG', 'not set')}")
-print(f"VERCEL_ENV: {os.getenv('VERCEL_ENV', 'not set')}")
-print(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
-print(f"PYTHON_ENV: {os.getenv('PYTHON_ENV', 'not set')}")
-print(f"Environment Type: {'Development' if os.getenv('FLASK_DEBUG') == '1' or os.getenv('FLASK_ENV') == 'development' else 'Production'}")
-
-# Detailed environment variable debugging
-print("\n=== OpenAI API Key Debug ===")
-api_key = os.getenv('OPENAI_API_KEY')
-print(f"API Key status: {'Present' if api_key else 'Missing'}")
-print(f"API Key length: {len(api_key) if api_key else 0} characters")
-if api_key:
-    print(f"API Key preview: {api_key[:6]}...{api_key[-4:]} (first 6 and last 4 chars)")
-
-print("\n=== Available Environment Variables ===")
-env_vars = [key for key in os.environ.keys()]
-print(f"Total environment variables: {len(env_vars)}")
-print("Environment variables starting with OPENAI_:", [var for var in env_vars if var.startswith('OPENAI_')])
-print("Environment variables starting with VERCEL_:", [var for var in env_vars if var.startswith('VERCEL_')])
-
 # Store messages in memory (they'll be lost when server restarts)
 messages = []
 
@@ -108,25 +79,15 @@ PHILOSOPHER_PROMPTS = {
 }
 
 def get_philosophical_response(philosopher, question):
-    # Get the API key and initialize client within the function
     api_key = os.getenv('OPENAI_API_KEY')
-    print(f"\nDebug - API Key in function: {'Present' if api_key else 'Missing'}")
-    print(f"Debug - API Key length: {len(api_key) if api_key else 0}")
     
     if not api_key:
         return "[Error: OpenAI API key not found. Please check your environment variables.]"
     
     try:
-        # Initialize client inside function
-        print("\nDebug - Attempting to initialize OpenAI client...")
         client = OpenAI(api_key=api_key)
-        print("Debug - OpenAI client initialized successfully")
-        
-        print("\nDebug - Attempting to create chat completion...")
-        print(f"Debug - Using model: gpt-4.1-nano")
-        
         response = client.chat.completions.create(
-            model="gpt-4.1-nano",
+            model="gpt-4.1-nano", # this is the model we're using. it works. do not change it!
             messages=[
                 {"role": "system", "content": PHILOSOPHER_PROMPTS[philosopher]},
                 {"role": "user", "content": question}
@@ -136,8 +97,6 @@ def get_philosophical_response(philosopher, question):
         )
         return response.choices[0].message.content
     except Exception as e:
-        print(f"\nDebug - Error details: {type(e).__name__}: {str(e)}")
-        print(f"Debug - OpenAI package version: {openai.__version__}")
         return f"[Error: {str(e)}]"
 
 @app.route("/")
@@ -146,33 +105,15 @@ def home():
 
 @app.route("/send_message", methods=['POST'])
 def send_message():
-    # Get the philosopher and question from the form
     philosopher = request.form.get('philosopher')
     question = request.form.get('message')
-    
-    # LOG THE PHILOSOPHER AND QUESTION
-    print(f"Philosopher: {philosopher}")
-    print(f"Question: {question}")
 
-    # log the env
-    print(f"OPENAI_API_KEY: {os.getenv('OPENAI_API_KEY')}")
-    # and the env name
-    print(f"FLASK_ENV: {os.getenv('FLASK_ENV')}")
-    print(f"FLASK_DEBUG: {os.getenv('FLASK_DEBUG')}")
-    print(f"VERCEL_ENV: {os.getenv('VERCEL_ENV')}")
-    print(f"NODE_ENV: {os.getenv('NODE_ENV')}")
-    print(f"PYTHON_ENV: {os.getenv('PYTHON_ENV')}")
-    
-
-    # Check if the philosopher and question are provided
     if philosopher and question:
-        # Add the user's question
         messages.append({
             'philosopher': 'You',
             'text': question
         })
         
-        # Get and add the philosopher's response
         response = get_philosophical_response(philosopher, question)
         messages.append({
             'philosopher': philosopher,
