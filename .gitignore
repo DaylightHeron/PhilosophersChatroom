@@ -1,0 +1,26 @@
+# add node_modules
+node_modules
+
+# add .env
+.env
+
+# Python virtual environment
+venv/
+env/
+.venv/
+.env/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Philosopher's Chatroom</title>
+    <style>
+        body {
+            font-family: "Courier New", Courier, monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFFFFF;
+            color: #333333;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #2C5282;  /* Subtle blue */
+            border-bottom: 2px solid #E2E8F0;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .chat-container {
+            border: 2px solid #E2E8F0;
+            border-style: solid;
+            border-radius: 8px;
+            padding: 20px;
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            background-color: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #E2E8F0;
+            background-color: #F7FAFC;
+            border-radius: 4px;
+        }
+        .message strong {
+            color: #2C5282;  /* Subtle blue */
+        }
+        .message-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #F7FAFC;
+            padding: 15px;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        .message-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 2px solid #E2E8F0;
+            background-color: #FFFFFF;
+            color: #333333;
+            font-family: "Courier New", Courier, monospace;
+            border-radius: 4px;
+        }
+        select {
+            padding: 5px;
+            background-color: #FFFFFF;
+            color: #333333;
+            border: 2px solid #E2E8F0;
+            font-family: "Courier New", Courier, monospace;
+            border-radius: 4px;
+        }
+        .send-button {
+            padding: 10px 20px;
+            background-color: #2C5282;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .send-button:hover {
+            background-color: #2B6CB0;
+        }
+        .title-decoration {
+            color: #2C5282;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1><span class="title-decoration">✧</span>Philosopher's Chatroom<span class="title-decoration">✧</span></h1>
+    
+    <div class="chat-container">
+        <!-- Messages will appear here -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message">
+                    <strong>{{ message.philosopher }}:</strong> {{ message.text }}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="message">
+                <strong>System:</strong> Welcome to the Philosophical Forum! Ask your deepest questions...
+            </div>
+        {% endif %}
+    </div>
+
+    <form class="message-form" method="POST" action="{{ url_for('send_message') }}">
+        <div class="form-row">
+            <select name="philosopher" required>
+                <option value="Confucius">Confucius</option>
+                <option value="Kant">Immanuel Kant</option>
+                <option value="Lao Tzu">Lao Tzu</option>
+                <option value="Markle">Meghan Markle</option>
+                <option value="Nietzsche">Friedrich Nietzsche</option>
+                <option value="Sartre">Jean-Paul Sartre</option>
+                <option value="Wittgenstein">Ludwig Wittgenstein</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <input type="text" name="message" class="message-input" placeholder="Ask your philosophical question..." required>
+            <button type="submit" class="send-button">ASK</button>
+        </div>
+    </form>
+</body>
+</html>
