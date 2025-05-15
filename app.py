@@ -47,17 +47,6 @@ print("Environment variables starting with VERCEL_:", [var for var in env_vars i
 # Store messages in memory (they'll be lost when server restarts)
 messages = []
 
-# Initialize OpenAI client with better error handling
-try:
-    client = OpenAI(api_key=api_key) if api_key else None
-    if not client:
-        print("\n✗ OpenAI client initialization failed: No API key available")
-    else:
-        print("\n✓ OpenAI client initialized successfully")
-except Exception as e:
-    print(f"\n✗ Error initializing OpenAI client: {str(e)}")
-    client = None
-
 # Philosopher personas
 PHILOSOPHER_PROMPTS = {
     "Confucius": """You are Confucius, the ancient Chinese philosopher. 
@@ -118,10 +107,19 @@ PHILOSOPHER_PROMPTS = {
 }
 
 def get_philosophical_response(philosopher, question):
-    if not client:
-        return "[Error: OpenAI API key not found. Please check your .env file.]"
+    # Get the API key and initialize client within the function
+    api_key = os.getenv('OPENAI_API_KEY')
+    print(f"\nDebug - API Key in function: {'Present' if api_key else 'Missing'}")
+    print(f"Debug - API Key length: {len(api_key) if api_key else 0}")
+    
+    if not api_key:
+        return "[Error: OpenAI API key not found. Please check your environment variables.]"
     
     try:
+        # Initialize client inside function
+        client = OpenAI(api_key=api_key)
+        print("\nDebug - Attempting to create chat completion...")
+        
         response = client.chat.completions.create(
             model="gpt-4.1-nano",
             messages=[
@@ -129,10 +127,11 @@ def get_philosophical_response(philosopher, question):
                 {"role": "user", "content": question}
             ],
             max_tokens=200,
-            temperature=0.7 # higher temperature for more creative responses
+            temperature=0.7
         )
         return response.choices[0].message.content
     except Exception as e:
+        print(f"\nDebug - OpenAI API Error: {str(e)}")
         return f"[Error: {str(e)}]"
 
 @app.route("/")
