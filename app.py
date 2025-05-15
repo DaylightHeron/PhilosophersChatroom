@@ -11,9 +11,15 @@ app = Flask(__name__)
 # Store messages in memory (they'll be lost when server restarts)
 messages = []
 
-# Initialize OpenAI client
+# Initialize OpenAI client with better error handling
 api_key = os.getenv('OPENAI_API_KEY')
-client = OpenAI(api_key=api_key) if api_key else None
+try:
+    client = OpenAI(api_key=api_key) if api_key else None
+    if not client:
+        print("Warning: OpenAI API key not found. Chat functionality will be disabled.")
+except Exception as e:
+    print(f"Error initializing OpenAI client: {str(e)}")
+    client = None
 
 # Philosopher personas
 PHILOSOPHER_PROMPTS = {
