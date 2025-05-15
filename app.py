@@ -86,7 +86,7 @@ def get_philosophical_response(philosopher, question):
                 {"role": "user", "content": question}
             ],
             max_tokens=200,
-            temperature=0.7
+            temperature=0.7 # higher temperature for more creative responses
         )
         return response.choices[0].message.content
     except Exception as e:
