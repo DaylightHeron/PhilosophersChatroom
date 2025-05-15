@@ -89,6 +89,42 @@
             color: #2C5282;
             margin: 0 10px;
         }
+        .tap-in-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #F7FAFC;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .tap-in-title {
+            font-size: 18px;
+            color: #2C5282;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .philosophers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .tap-in-button {
+            padding: 8px 15px;
+            background-color: #4A5568;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+            font-family: "Courier New", Courier, monospace;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+        .tap-in-button:hover {
+            background-color: #2C5282;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -126,5 +162,39 @@
             <button type="submit" class="send-button">ASK</button>
         </div>
     </form>
+
+    <div class="tap-in-section">
+        <div class="tap-in-title">Tap in a Philosopher</div>
+        <div class="philosophers-grid">
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Confucius" class="tap-in-button">Confucius</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Kant" class="tap-in-button">Kant</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Lao Tzu" class="tap-in-button">Lao Tzu</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Markle" class="tap-in-button">Meghan Markle</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Nietzsche" class="tap-in-button">Nietzsche</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Sartre" class="tap-in-button">Sartre</button>
+            </form>
+            <form method="POST" action="{{ url_for('send_message') }}" style="display: contents;">
+                <input type="hidden" name="message" value="*taps in to respond to the conversation*">
+                <button type="submit" name="philosopher" value="Wittgenstein" class="tap-in-button">Wittgenstein</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

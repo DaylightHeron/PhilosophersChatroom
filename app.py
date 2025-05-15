@@ -85,11 +85,24 @@ def get_philosophical_response(philosopher, question):
     
     try:
         client = OpenAI(api_key=api_key)
+        
+        # Build context from previous messages
+        context = ""
+        if 'messages' in session and len(session['messages']) > 0:
+            # Get last 3 messages for context
+            recent_messages = session['messages'][-3:]
+            context = "\n".join([f"{msg['philosopher']}: {msg['text']}" for msg in recent_messages])
+            
+        # Add context to the prompt if it exists
+        prompt = question
+        if context:
+            prompt = f"Previous conversation:\n{context}\n\nNow, please respond to: {question}"
+        
         response = client.chat.completions.create(
             model="gpt-4.1-nano", # this is the model we're using. it works. do not change it!
             messages=[
                 {"role": "system", "content": PHILOSOPHER_PROMPTS[philosopher]},
-                {"role": "user", "content": question}
+                {"role": "user", "content": prompt}
             ],
             max_tokens=200,
             temperature=0.7
