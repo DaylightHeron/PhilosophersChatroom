@@ -3,16 +3,26 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+# Only load .env file in development environment
+if os.environ.get('VERCEL_ENV') is None:  # We're not in Vercel
+    load_dotenv()
+    print("Loading environment from .env file (development mode)")
+else:
+    print(f"Running in Vercel environment: {os.environ.get('VERCEL_ENV')}")
 
 app = Flask(__name__)
+
+# Add debug logging for environment variables
+print(f"OPENAI_API_KEY exists: {bool(os.getenv('OPENAI_API_KEY'))}")
 
 # Store messages in memory (they'll be lost when server restarts)
 messages = []
 
 # Initialize OpenAI client with better error handling
 api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    print("Warning: OPENAI_API_KEY environment variable is not set")
+    print("Current environment variables:", list(os.environ.keys()))  # Add debugging info
 try:
     client = OpenAI(api_key=api_key) if api_key else None
     if not client:
