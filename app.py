@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -15,9 +15,8 @@ else:
 app = Flask(__name__)
 app.config['ENV'] = 'production' if os.environ.get('VERCEL_ENV') else 'development'
 app.config['DEBUG'] = debug_mode
-
-# Store messages in memory (they'll be lost when server restarts)
-messages = []
+# Add a secret key (required for session management)
+app.secret_key = os.urandom(24)  # or use a fixed secret key from your environment variables
 
 # Philosopher personas
 PHILOSOPHER_PROMPTS = {
@@ -101,24 +100,30 @@ def get_philosophical_response(philosopher, question):
 
 @app.route("/")
 def home():
-    return render_template("index.html", messages=messages)
+    if 'messages' not in session:
+        session['messages'] = []
+    return render_template("index.html", messages=session['messages'])
 
 @app.route("/send_message", methods=['POST'])
 def send_message():
+    if 'messages' not in session:
+        session['messages'] = []
+        
     philosopher = request.form.get('philosopher')
     question = request.form.get('message')
 
     if philosopher and question:
-        messages.append({
+        session['messages'].append({
             'philosopher': 'You',
             'text': question
         })
         
         response = get_philosophical_response(philosopher, question)
-        messages.append({
+        session['messages'].append({
             'philosopher': philosopher,
             'text': response
         })
+        session.modified = True
     
     return redirect(url_for('home'))
 
