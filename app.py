@@ -3,32 +3,57 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
+print("=== Environment Variable Debug Information ===")
+print(f"Current Working Directory: {os.getcwd()}")
+
+# Print current environment information
+print("\n=== Current Environment Information ===")
+print(f"FLASK_ENV: {os.getenv('FLASK_ENV', 'not set')}")
+print(f"FLASK_DEBUG: {os.getenv('FLASK_DEBUG', 'not set')}")
+print(f"VERCEL_ENV: {os.getenv('VERCEL_ENV', 'not set')}")
+print(f"NODE_ENV: {os.getenv('NODE_ENV', 'not set')}")
+print(f"PYTHON_ENV: {os.getenv('PYTHON_ENV', 'not set')}")
+print(f"Environment Type: {'Development' if os.getenv('FLASK_DEBUG') == '1' or os.getenv('FLASK_ENV') == 'development' else 'Production'}")
+
 # Only load .env file in development environment
 if os.environ.get('VERCEL_ENV') is None:  # We're not in Vercel
-    load_dotenv()
-    print("Loading environment from .env file (development mode)")
+    print("\nLocal development environment detected")
+    try:
+        load_dotenv()
+        print("✓ Successfully called load_dotenv()")
+    except Exception as e:
+        print(f"✗ Error loading .env file: {str(e)}")
 else:
-    print(f"Running in Vercel environment: {os.environ.get('VERCEL_ENV')}")
+    print(f"\nRunning in Vercel environment: {os.environ.get('VERCEL_ENV')}")
 
 app = Flask(__name__)
 
-# Add debug logging for environment variables
-print(f"OPENAI_API_KEY exists: {bool(os.getenv('OPENAI_API_KEY'))}")
+# Detailed environment variable debugging
+print("\n=== OpenAI API Key Debug ===")
+api_key = os.getenv('OPENAI_API_KEY')
+print(f"API Key status: {'Present' if api_key else 'Missing'}")
+print(f"API Key length: {len(api_key) if api_key else 0} characters")
+if api_key:
+    print(f"API Key preview: {api_key[:6]}...{api_key[-4:]} (first 6 and last 4 chars)")
+
+print("\n=== Available Environment Variables ===")
+env_vars = [key for key in os.environ.keys()]
+print(f"Total environment variables: {len(env_vars)}")
+print("Environment variables starting with OPENAI_:", [var for var in env_vars if var.startswith('OPENAI_')])
+print("Environment variables starting with VERCEL_:", [var for var in env_vars if var.startswith('VERCEL_')])
 
 # Store messages in memory (they'll be lost when server restarts)
 messages = []
 
 # Initialize OpenAI client with better error handling
-api_key = os.getenv('OPENAI_API_KEY')
-if not api_key:
-    print("Warning: OPENAI_API_KEY environment variable is not set")
-    print("Current environment variables:", list(os.environ.keys()))  # Add debugging info
 try:
     client = OpenAI(api_key=api_key) if api_key else None
     if not client:
-        print("Warning: OpenAI API key not found. Chat functionality will be disabled.")
+        print("\n✗ OpenAI client initialization failed: No API key available")
+    else:
+        print("\n✓ OpenAI client initialized successfully")
 except Exception as e:
-    print(f"Error initializing OpenAI client: {str(e)}")
+    print(f"\n✗ Error initializing OpenAI client: {str(e)}")
     client = None
 
 # Philosopher personas
